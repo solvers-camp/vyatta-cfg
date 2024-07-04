@@ -1,0 +1,43 @@
+#!/usr/bin/make -f
+
+DIR := debian/vyatta-cfg
+VYOS_LIBEXEC_DIR := usr/libexec/vyos
+
+export DH_OPTIONS
+
+## uncomment to enable hardening
+export DEB_BUILD_HARDENING=1
+
+cfg_opts := --prefix=/opt/vyatta
+cfg_opts += --libdir=/usr/lib
+cfg_opts += --includedir=/usr/include
+cfg_opts += --mandir=\$${prefix}/share/man
+cfg_opts += --infodir=\$${prefix}/share/info
+cfg_opts += --enable-unionfsfuse
+cfg_opts += CFLAGS="$(CFLAGS)"
+cfg_opts += LDFLAGS="-Wl,-z,defs"
+cfg_opts += CXXFLAGS="$(CXXFLAGS)"
+inst_opts := --sourcedir=debian/tmp
+
+%:
+	dh $@ --with=autoreconf
+
+autoreconf:
+	autoreconf -f -i
+
+override_dh_gencontrol:
+	rm -f debian/*/DEBIAN/conffiles
+	if [ -f "../.VYOS_DEV_BUILD" ]; then \
+		dh_gencontrol -- -v999.dev; \
+	else \
+		dh_gencontrol; \
+	fi
+
+override_dh_auto_configure:
+	rm -f debian/*.debhelper*
+	./configure $(cfg_opts)
+
+override_dh_auto_test:
+
+override_dh_install:
+	dh_install $(inst_opts)

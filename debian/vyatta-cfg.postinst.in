@@ -1,0 +1,35 @@
+#!/bin/bash -e
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+sysconfdir=@sysconfdir@
+sbindir=@sbindir@
+
+for dir in $sysconfdir/config $prefix/config; do
+  if [ -d "$dir" ]; then
+    # already exists
+    chmod 2775 $dir
+  else
+    # create it
+    mkdir -m 2775 -p $dir
+  fi
+  chgrp vyattacfg $dir 2>/dev/null
+done
+
+# capability stuff
+for bin in my_cli_bin my_cli_shell_api; do
+  touch -ac $sbindir/$bin
+  setcap cap_sys_admin=pe $sbindir/$bin
+done
+
+# commit hooks
+mkdir -p /etc/commit/pre-hooks.d
+mkdir -p /etc/commit/post-hooks.d
+
+# create symlink for post commit hook
+ln -sf /opt/vyatta/sbin/vyatta-log-commit.pl /etc/commit/post-hooks.d/10vyatta-log-commit.pl
+
+# User pre/post-commit hook executors
+ln -sf /opt/vyatta/sbin/vyos-user-precommit-hooks.sh /etc/commit/pre-hooks.d/99vyos-user-precommit-hooks
+ln -sf /opt/vyatta/sbin/vyos-user-postcommit-hooks.sh /etc/commit/post-hooks.d/99vyos-user-postcommit-hooks
+
