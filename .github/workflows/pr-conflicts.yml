@@ -3,16 +3,11 @@ on:
   pull_request_target:
     types: [synchronize]
 
+permissions:
+  pull-requests: write
+  contents: read
+
 jobs:
-  Conflict_Check:
-    name: 'Check PR status: conflicts and resolution'
-    runs-on: ubuntu-22.04
-    steps:
-      - name: check if PRs are dirty
-        uses: eps1lon/actions-label-merge-conflict@releases/2.x
-        with:
-          dirtyLabel: "state: conflict"
-          removeOnDirtyLabel: "state: conflict resolved"
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          commentOnDirty: "This pull request has conflicts, please resolve those before we can evaluate the pull request."
-          commentOnClean: "Conflicts have been resolved. A maintainer will review the pull request shortly."
+  check-pr-conflict-call:
+    uses: vyos/.github/.github/workflows/check-pr-merge-conflict.yml@current
+    secrets: inherit
