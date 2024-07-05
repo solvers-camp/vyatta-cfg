@@ -5,8 +5,7 @@
     pull_request_target:
       branches:
         - current
-        - crux
-        - equuleus
+
       types: [opened, synchronize, edited]
   
   permissions:

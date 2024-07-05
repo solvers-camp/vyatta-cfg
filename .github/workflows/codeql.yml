@@ -19,4 +19,4 @@ jobs:
     uses: vyos/.github/.github/workflows/codeql-analysis.yml@current
     secrets: inherit
     with:
-      languages: "['C++']" 
+      languages: "['cpp']" 
