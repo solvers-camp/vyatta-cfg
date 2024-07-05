@@ -4,9 +4,7 @@
   on:
     pull_request_target:
       branches:
-        - current
-        - crux
-        - equuleus
+        - circinus
       types: [opened, synchronize, edited]
   
   permissions:
@@ -15,5 +13,5 @@
   
   jobs:
     check-pr-title:
-      uses: vyos/.github/.github/workflows/check-pr-message.yml@current
+      uses: vyos/.github/.github/workflows/check-pr-message.yml@circinus
       secrets: inherit
